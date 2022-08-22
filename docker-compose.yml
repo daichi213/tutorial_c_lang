@@ -1,0 +1,9 @@
+version: "3"
+services:
+  gcc:
+    image: gcc
+    volumes:
+      - .:/usr/local/src/
+    working_dir: /usr/local/src/
+    stdin_open: true
+    tty: true
