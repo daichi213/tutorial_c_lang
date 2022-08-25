@@ -67,6 +67,121 @@ int sum(int min, int max)
 }
 ```
 
+#### ブロック
+
+ブロックとは、{}で囲まれた部分のところで、for や if 文の`{}`もブロックとなっている。また、ブロック内は以下のような特徴を持っている。
+
+- ブロック内で変数宣言をすると、宣言ブロック内をスコープとするローカル変数を定義できる
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    int value1 = 10;
+    int value2 = 20;
+
+    printf("1:value1 %d\n", value1);
+    printf("1:value2 %d\n", value2);
+
+    {
+        // ブロック内で宣言をすると新たな変数として認識される
+        int value1;
+        value1 = 30;
+        // 一つ外側で宣言した変数として認識されている
+        value2 = 40;
+        printf("2:value1 %d\n", value1);
+        printf("2:value2 %d\n", value2);
+    }
+
+    printf("3:value1 %d\n", value1);
+    printf("3:value2 %d\n", value2);
+
+    return 0;
+}
+```
+
+##### ローカル変数とグローバル変数
+
+```C
+#include <stdio.h>
+
+// グローバル変数
+// この宣言時に0に初期化される
+int count;
+
+int countfunc(void);
+
+int main(void)
+{
+
+    // グローバル変数と同名のローカル変数を宣言
+    int count;
+    countfunc();
+    count = 10;
+    countfunc();
+    countfunc();
+    // 関数内で使用される変数はローカル変数が優先して使用される
+    printf("main : count = %d\n", count);
+    return 0;
+}
+
+int countfunc(void)
+{
+    count++;
+    printf("%d\n",count);
+    return count;
+}
+```
+
+- グローバル変数・・・ブロック外で宣言されている変数
+  - 1 つのソースファイル内では、どの関数からでもこの変数へアクセスできる
+- ローカル変数・・・ブロック内で宣言されている変数
+  - ブロック内では、ローカル変数が優先して使用される。
+    - 例えば、上の場合 printf の出力でローカル変数の count が使用されている
+
+#### 配列
+
+```C
+#include <memory.h>
+#include <stdio.h>
+
+int main(void)
+{
+    int array1[] = { 42, 79, 13, 19, 41 };
+    int array2[] = {1,2,3,4,5};
+
+    int i;
+    // 配列全体のバイト数を要素のバイト数で割ることで、要素数を算出できる
+    int array1_size = sizeof(array1)/sizeof(array1[0]);
+    int array2_size = sizeof(array2)/sizeof(array2[0]);
+
+    for(i=0; i<array1_size; i++){
+        printf("array1_size[%d]:%d\n",i,array1[i]);
+    }
+    for(i=0; i<array2_size; i++){
+        printf("array2_size[%d]:%d\n",i,array2[i]);
+    }
+
+    memcpy(array2,array1,sizeof(array1));
+    printf("\n\n\n");
+
+    for(i=0; i<array1_size; i++){
+        printf("array1_size[%d]:%d\n",i,array1[i]);
+    }
+    for(i=0; i<array2_size; i++){
+        printf("array2_size[%d]:%d\n",i,array2[i]);
+    }
+}
+```
+
+- [sizeof は演算子で、配列のバイト数を返却する](http://www1.cts.ne.jp/~clab/hsample/Func/Func07.html)
+- [その他の演算子](https://www.itsenka.com/contents/development/c/operator.html)
+
+##### バッファオーバーラン
+
+処理中に使用しているメモリ以外のスタックを上書きしてしまう挙動を`バッファオーバーラン`とよぶ。memcpy 関数は、同じサイズの配列同士をコピーすることを想定しているため、コピー元がコピー先の配列よりも大きいと別のスタックのメモリを上書きしてしまうことにより、重大なエラーが発生してしまったりする。
+
 #### リンカー
 
 [参考ページ](https://qiita.com/kazatsuyu/items/5c8d9f539cd925fda007)
