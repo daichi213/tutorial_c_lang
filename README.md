@@ -466,11 +466,34 @@ int main(void)
 - file の構造体を定義して、その構造体を初期化してファイルの読み書きを行う。
 - 上記 test.txt ファイルではカンマで区切って、複数の値の読み込みを行っている。このようなデータ形式はおなじみ csv ファイルである。
 
+##### 書き込みモード
+
+```C
+#include <stdio.h>
+#include <string.h>
+
+void write_row_in_file(person *person)
+{
+    FILE *file;
+    file = fopen(filename, "a");
+
+    fprintf(file,"%d,%d,%s\n",person->num,person->score,&person->name);
+    fclose(file);
+
+    return;
+}
+```
+
+- fopen の第二引数にファイルの
+  - [書き込みの a モードを使用すると fprintf などを使用したデータの書き込み時にファイルに追記することができる](https://webkaru.net/clang/file-append/)
+
 #### リンカー
 
 [参考ページ](https://qiita.com/kazatsuyu/items/5c8d9f539cd925fda007)
 
 ### 個人的まとめ
+
+#### ポインターの扱い方
 
 ```C
 ...
@@ -492,5 +515,39 @@ void student_print(student *data)
     return;
 }
 ```
+
+#### 関数への文字列の渡し方
+
+```C
+...
+int main(void)
+{
+    person person[raw_num];
+
+// 関数の定義では第四引数はアドレスを指定するようになっている
+// 下の第四引数は通常の文字列に見えるが、これは文字列の配列のためC言語ではアドレスとして認識される
+    input_person(&person[0],1,0,"Nobita Nobi");
+...
+}
+
+void input_person(person *person, int num, int score, char *name)
+{
+    person->num = num;
+    person->score = score;
+    strcpy(person->name, name);
+
+    return;
+}
+...
+```
+
+- [今回の文字列の渡し方参考例](https://github.com/narupo/blogsnippets/blob/main/c/pointerandfunc/args.c#L4-L5)
+- [関数への文字列の渡し方（ポインターの配列使用）](http://www.eonet.ne.jp/~nao2/c/c_0b_char_string.html)
+- 悩んだポイント
+  - フォーマット指定子%s には文字配列の先頭アドレスを渡す
+  - 文字列を関数に渡す際のポイント
+    - 引数は`char`型
+    - 関数の呼び出し時には、文字配列の先頭アドレスを渡す
+    - **[具体的には上記コードブロックを参考にする。一番悩んだポイントとして、関数呼び出し時に指定している文字列は C 言語では配列の先頭アドレスとして認識される](https://github.com/narupo/blogsnippets/blob/main/c/pointerandfunc/args.c#L4-L5)**
 
 ## C++
