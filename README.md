@@ -767,3 +767,75 @@ void input_person(person *person, int num, int score, char *name)
     - **[具体的には上記コードブロックを参考にする。一番悩んだポイントとして、関数呼び出し時に指定している文字列は C 言語では配列の先頭アドレスとして認識される](https://github.com/narupo/blogsnippets/blob/main/c/pointerandfunc/args.c#L4-L5)**
 
 ## C++
+
+### クラス
+
+[参考ページ](http://wisdom.sakura.ne.jp/programming/cpp/cpp5.html)
+
+#### コンストラクター
+
+```C++
+#include <iostream>
+using namespace std;
+
+class Kitty {
+    public:
+        Kitty();
+} obj;
+
+Kitty::Kitty() {
+    cout << "Kitty on your lap\n";
+}
+
+int main() {
+    Kitty obj;
+    return 0;
+}
+```
+
+- C++ではメソッドのことをメンバー関数と呼ぶ
+- クラス名と同じ関数がコンストラクターになる
+
+#### デストラクター
+
+```c++
+#include <iostream>
+using namespace std;
+
+class Kitty {
+    public:
+        ~Kitty();
+};
+
+Kitty::~Kitty() {
+    cout << "Kitty on your lap" << "\n";
+}
+
+// 以下関数のブロック内がオブジェクトのスコープ（ライフサイクル）となっている
+void createKitty() {
+    Kitty obj;
+}
+
+int main() {
+    createKitty();
+    // ↑の処理が完了したタイミングがコンストラクターの呼び出しタイミング
+    createKitty();
+    return 0;
+}
+```
+
+- オブジェクトが破壊されたタイミングで実行される関数
+  - [変数のライフサイクルについての分かりやすい記事](https://monozukuri-c.com/langcpp-destructor/#toc2)
+  - 基本的にデストラクター関数で `delete` 演算子を使用してメモリを解放する処理を記述する
+  - [スマートポインター](http://mikanbako.blog.shinobi.jp/c%20-%20c--/-%E5%8B%89%E5%BC%B7%E6%97%A5%E8%A8%98-%20c--%20%E3%81%AE%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%81%AE%E7%A0%B4%E6%A3%84)と呼ばれる機能もあり、これを使えば自動的にメモリが解放されるよう
+
+> オブジェクトが破壊されるタイミングは、スコープから外れたときです
+
+```c++
+int main() {
+    Kitty obj;
+    return 0;
+}
+```
+
+最初意味が分からなかったが、これは単純にオブジェクト化されたブロックの処理が終了したタイミング（スコープが外れてる）のよう。上の例だと、`main`が終了したタイミング、つまり return 実行時にスコープが外れることになる。
