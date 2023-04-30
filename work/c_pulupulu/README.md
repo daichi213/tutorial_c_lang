@@ -1,0 +1,1 @@
+[学習ページ](http://wisdom.sakura.ne.jp/programming/cpp/)
